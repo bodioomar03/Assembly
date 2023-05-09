@@ -53,7 +53,10 @@ int main(int argc, char **argv)
     while (loop) {
         printf("%d. %s \n", i_menu + 1, menu_list[i_menu]);
         
-        scanf("%s", cmd);
+        for (int i = 0; i < 4; i++)
+        {
+            scanf("%c", &cmd[i]);    
+        }
         
         
         if (cmd[2] == 'B') {
@@ -64,6 +67,7 @@ int main(int argc, char **argv)
                 i_menu = 0;
             }
         }
+
         else if (cmd[2] == 'A') {
             if (i_menu > 0) {
                 i_menu--;
@@ -89,7 +93,7 @@ int main(int argc, char **argv)
                     
                     scanf("%d", &frecce_direzione);
                     
-                    if (frecce_direzione < 0) {
+                    if (frecce_direzione < 2) {
                         frecce_direzione = 2;
                     }
                     else if (frecce_direzione > 5) {
@@ -119,7 +123,18 @@ int subMenu(char* menu_list, int value) {
             printf("%s OFF \n", menu_list);
         
         
-        scanf("%s", cmd);
+        cmd[1]=' ';
+        for (int i = 0; i < 3; i++)
+        {
+            scanf("%c", &cmd[i]);
+
+        }
+
+        if (cmd[2]==10)
+        {
+            printf("sono qua\n");
+            return value;
+        }
         printf("%s", cmd);
         
         if (cmd[2] == 'B') {
@@ -142,23 +157,6 @@ int subMenu(char* menu_list, int value) {
         }*/
         
         
-        if(cmd[0]==10)
-    	{
-    		printf("ENTER KEY is pressed.\n");
-    		return value;
-    	}
-    	if(cmd[1]==10)
-    	{
-    		printf("ENTER KEY is pressed.\n");
-    		return value;
-    	}
-    	if(cmd[2]==10)
-    	{
-    		printf("ENTER KEY is pressed.\n");
-    		return value;
-    	}
-    	
-    	
     	cmd[2] = ' '; 
     }
 }
