@@ -8,7 +8,7 @@ int main(int argc, char **argv)
 {
     int isRoot = 0;
     
-    if(argc == 1){
+    if(argc >1){
 
         if (argv[1][0] == '2' &&
         argv[1][1] == '2' &&
@@ -18,6 +18,8 @@ int main(int argc, char **argv)
             isRoot = 1;
         }
         
+    }else{
+        isRoot=0;
     }
     
     
@@ -65,6 +67,8 @@ int main(int argc, char **argv)
         else if (cmd[2] == 'A') {
             if (i_menu > 0) {
                 i_menu--;
+            }else{
+                i_menu = N_MUNU-max;
             }
         }
             
