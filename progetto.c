@@ -53,7 +53,7 @@ int main(int argc, char **argv)
     while (loop) {
         printf("%d. %s \n", i_menu + 1, menu_list[i_menu]);
         
-        scanf("%s", &cmd);
+        scanf("%s", cmd);
         
         
         if (cmd[2] == 'B') {
@@ -119,7 +119,7 @@ int subMenu(char* menu_list, int value) {
             printf("%s OFF \n", menu_list);
         
         
-        scanf("%s", &cmd);
+        scanf("%s", cmd);
         printf("%s", cmd);
         
         if (cmd[2] == 'B') {
