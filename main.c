@@ -1,7 +1,43 @@
 #include <stdio.h>
 #define N_MUNU 8
 
-int subMenu(char*,int);
+// Funzione per determinare il tipo di input
+int subMenu(char* menu_list, int value) {
+    char carattere;
+    while (1) {
+        if (value)
+            printf("%s ON \n", menu_list);
+        else
+            printf("%s OFF \n", menu_list);
+        
+        
+        scanf("%c", &carattere);
+        
+        if (carattere == '\n') {
+            return value; // Esce dal ciclo while
+            
+        } else if (carattere == '\033') {
+            // Leggi il carattere successivo per determinare il tipo di freccia
+            getchar(); // Ignora il carattere '['
+            char freccia = getchar();
+    
+            if (freccia == 'A') {
+                if (value)
+                    value = 0;
+                else
+                    value = 1;
+            } else if (freccia == 'B') {
+                if (value)
+                    value = 0;
+                else
+                    value = 1;
+            }
+        }
+
+        getchar(); // Consuma il carattere di newline residuo nel buffer
+    }
+}
+
 
 
 int main(int argc, char **argv)
@@ -111,69 +147,4 @@ int main(int argc, char **argv)
         cmd[2] = ' '; 
     }
     
-}
-
-int subMenu(char* menu_list, int value) {
-    char cmd[3];
-    
-    while (1) {
-        if (value)
-            printf("%s ON \n", menu_list);
-        else
-            printf("%s OFF \n", menu_list);
-            
-            
-
-        for (int i = 0; i < 3; i++)
-        {
-            scanf("%c", &cmd[i]);
-            
-            if (cmd[0]=='\n')
-            {
-                printf("Enter detect");
-                break;
-            }
-            
-        }
-        
-
-        if (cmd[0]=='\n' && cmd[2] == 0)
-        {
-            
-            printf("sono qu@\n");
-            return value;
-        }
-
-        
-        if (cmd[2] == 'B') {
-            if (value)
-                value = 0;
-            else
-                value = 1;
-            
-            cmd[2] = 99;
-        }
-        else if (cmd[2] == 'A') {
-            if (value)
-                value = 0;
-            else
-                value = 1;
-                
-            cmd[2] = 99;
-        }
-        else {
-            cmd[2] = 0;
-        }
-        
-        
-        
-        /*else {
-            return value;
-        }*/
-        
-        
-        cmd[0] = 0; 
-        cmd[1] = 0;
-        cmd[3] = 0;
-    }
 }
