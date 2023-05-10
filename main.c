@@ -128,9 +128,9 @@ int subMenu(char* menu_list, int value) {
         {
             scanf("%c", &cmd[i]);
             
-            if (cmd[0]=='\n')
+            if (cmd[0]==10)
             {
-                printf("Enter detect");
+                printf("Enter detect\n");
                 break;
             }
             
