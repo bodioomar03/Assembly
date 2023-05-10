@@ -122,17 +122,22 @@ int subMenu(char* menu_list, int value) {
         else
             printf("%s OFF \n", menu_list);
         
-        
-        cmd[1]=' ';
+        cmd[1]='x';
         for (int i = 0; i < 3; i++)
         {
             scanf("%c", &cmd[i]);
+            if (cmd[1]==10)
+            {
+                break;
+            }
+            
 
         }
 
-        if (cmd[2]==10)
+        if (cmd[1]=='\n')
         {
-            printf("sono qua\n");
+            
+            printf("sono qu@\n");
             return value;
         }
         printf("%s", cmd);
