@@ -71,7 +71,7 @@ int main(int argc, char **argv)
     
     
     int i_menu = 0;
-    char cmd[3];
+    char carattere;
     
     int max = 0;
     
@@ -89,13 +89,10 @@ int main(int argc, char **argv)
     while (loop) {
         printf("%d. %s \n", i_menu + 1, menu_list[i_menu]);
         
-        for (int i = 0; i < 4; i++)
-        {
-            scanf("%c", &cmd[i]);    
-        }
+        scanf("%c", &carattere);
         
         
-        if (cmd[2] == 'B') {
+        if (carattere == 'B') {
             if (i_menu < (N_MUNU-max)) {
                 i_menu++;
             }
@@ -104,7 +101,7 @@ int main(int argc, char **argv)
             }
         }
 
-        else if (cmd[2] == 'A') {
+        else if (carattere == 'A') {
             if (i_menu > 0) {
                 i_menu--;
             }else{
@@ -113,7 +110,7 @@ int main(int argc, char **argv)
         }
             
         // sub menu
-        else if (cmd[2] == 'C') {
+        else if (carattere == 'C') {
             
             if (i_menu+1 == 4)
                 block_door = subMenu(menu_list[i_menu], block_door);
@@ -144,7 +141,7 @@ int main(int argc, char **argv)
             
             
             
-        cmd[2] = ' '; 
+         
     }
     
 }
