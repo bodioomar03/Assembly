@@ -66,7 +66,7 @@ menu_loop:
     add eax, 1 ; Incremento di 1 per visualizzare i numeri partendo da 1
     mov esi, menu_list
     lea edi, [format_menu]
-    call print_menu
+    call print_string ;call print_menu
     
     ; Leggo l'input dell'utente
     call read_char
@@ -82,6 +82,8 @@ menu_loop:
     je handle_down_arrow
     cmp byte [carattere], 'C'
     je handle_right_arrow
+
+    ; Loop while
     jmp menu_loop
     
 handle_input:
@@ -130,7 +132,7 @@ handle_right_arrow:
     push dword [block_door]
     push menu_list + 3*30 ; Puntatore alla voce del menu corrispondente
     call sub_menu
-    mov byte [block_door], al
+    mov byte [block_door], al ; CAMBIARE IN AEX
     jmp menu_loop
     
 check_back_home:
@@ -140,12 +142,12 @@ check_back_home:
     push dword [back_home]
     push menu_list + 4*30 ; Puntatore alla voce del menu corrispondente
     call sub_menu
-    mov byte [back_home], al
+    mov byte [back_home], al ; CAMBIARE IN AEX
     jmp menu_loop
     
 check_frecce_direzione:
     cmp byte [isRoot], 0
-    je skip_frecce_direzione
+    je skip_frecce_direzione ; CHANGE: jmp menu_loop
     
     cmp eax, 7
     jne check_pressure_reset
@@ -183,7 +185,7 @@ sub_menu_loop:
     ; Stampo il sottomenu corrente con il valore attuale
     push esi
     movzx eax, byte [al]
-    test eax, eax
+    test eax, eax ; Verifica se il registro contiene un valore diverso da zero. Serve per controllare se un registro è zero o non zero prima di eseguire ulteriori istruzioni condizionali
     jnz print_submenu_on
     push esi
     mov esi, format_submenu_off
