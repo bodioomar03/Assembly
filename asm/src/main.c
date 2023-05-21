@@ -74,7 +74,6 @@ int main(int argc, char **argv)
     
     
     int i_menu = 0;
-    char cmd[3];
     
     int max = 0;
     
