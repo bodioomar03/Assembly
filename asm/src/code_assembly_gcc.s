@@ -22,10 +22,10 @@
 
 .section .text
 
-.global main
+.global _start
 
 
-main:
+_start:
     # Controllo se è stato passato un argomento sulla riga di comando
     movl 4(%esp), %eax
     test %eax, %eax
