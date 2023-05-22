@@ -7,15 +7,22 @@
     format_pressure_reset: .string "Pressione gomme resettata\n"
     menu_list: .string "Setting automobile:\nData: 15/06/2014\nOra: 15:32\nBlocco automatico porte:\nBack-home:\nCheck olio\nFrecce direzione\nReset pressione gomme\n"
 
+
 .section .bss
-    carattere: .resb 1
-    i_menu: .resb 1
-    block_door: .resb 1
-    back_home: .resb 1
-    frecce_direzione: .resb 1
+    .comm carattere, 1
+    .comm i_menu, 1
+    .comm block_door, 1
+    .comm back_home, 1
+    .comm frecce_direzione, 1
+
+    .comm isRoot, 1
+    .comm N_MUNU, 1
+    .comm max, 1
+
 
 .section .text
     .global _start
+
 
 _start:
     # Controllo se è stato passato un argomento sulla riga di comando
@@ -119,7 +126,7 @@ handle_right_arrow:
     # Freccia destra, controllo quale voce del menu è selezionata
     movl i_menu, %eax
     incl %eax # Incremento di 1 per avere valori da 1 a N_MENU
-    cmp %eax, $4
+    cmp $4, %eax
     jne check_back_home
     # La voce selezionata è "Blocco automatico porte"
     pushl block_door
@@ -129,7 +136,7 @@ handle_right_arrow:
     jmp menu_loop
     
 check_back_home:
-    cmp %eax, $5
+    cmp $5, %eax
     jne check_frecce_direzione
     # La voce selezionata è "Back-home"
     pushl back_home
@@ -142,7 +149,7 @@ check_frecce_direzione:
     cmpb $0, isRoot
     je skip_frecce_direzione # CHANGE: jmp menu_loop
     
-    cmp %eax, $7
+    cmp $7, %eax
     jne check_pressure_reset
     # La voce selezionata è "Frecce direzione"
     pushl frecce_direzione
@@ -152,7 +159,7 @@ check_frecce_direzione:
     jmp menu_loop
     
 check_pressure_reset:
-    cmp %eax, $8
+    cmp $8, %eax
     jne menu_loop
     # La voce selezionata è "Reset pressione gomme"
     movl $format_pressure_reset, %esi
@@ -160,7 +167,7 @@ check_pressure_reset:
     jmp menu_loop
     
 skip_frecce_direzione:
-    cmp %eax, $7
+    cmp $7, %eax
     je menu_loop
     
     jmp menu_loop
