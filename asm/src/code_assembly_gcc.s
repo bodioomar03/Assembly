@@ -56,15 +56,15 @@ start_menu:
 menu_loop:
     # Stampo il menu corrente
     movl i_menu, %eax
-    incl %eax ; Incremento di 1 per visualizzare i numeri partendo da 1
+    incl %eax # Incremento di 1 per visualizzare i numeri partendo da 1
     movl $menu_list, %esi
     leal format_menu, %edi
-    call print_string ;call print_menu
+    call print_string #call print_menu
     
     # Leggo l'input dell'utente
     call read_char
     
-    cmpb $27, carattere ; Controllo se il carattere letto è la sequenza di escape
+    cmpb $27, carattere # Controllo se il carattere letto è la sequenza di escape
     jne handle_input
     
     # Leggo il carattere successivo per determinare il tipo di freccia
@@ -118,14 +118,14 @@ set_i_menu_min:
 handle_right_arrow:
     # Freccia destra, controllo quale voce del menu è selezionata
     movl i_menu, %eax
-    incl %eax ; Incremento di 1 per avere valori da 1 a N_MENU
+    incl %eax # Incremento di 1 per avere valori da 1 a N_MENU
     cmp %eax, $4
     jne check_back_home
     # La voce selezionata è "Blocco automatico porte"
     pushl block_door
-    pushl $menu_list + 3*30 ; Puntatore alla voce del menu corrispondente
+    pushl $menu_list + 3*30 # Puntatore alla voce del menu corrispondente
     call sub_menu
-    movb %al, block_door ; CAMBIARE IN AEX
+    movb %al, block_door # CAMBIARE IN AEX
     jmp menu_loop
     
 check_back_home:
@@ -133,20 +133,20 @@ check_back_home:
     jne check_frecce_direzione
     # La voce selezionata è "Back-home"
     pushl back_home
-    pushl $menu_list + 4*30 ; Puntatore alla voce del menu corrispondente
+    pushl $menu_list + 4*30 # Puntatore alla voce del menu corrispondente
     call sub_menu
-    movb %al, back_home ; CAMBIARE IN AEX
+    movb %al, back_home # CAMBIARE IN AEX
     jmp menu_loop
     
 check_frecce_direzione:
     cmpb $0, isRoot
-    je skip_frecce_direzione ; CHANGE: jmp menu_loop
+    je skip_frecce_direzione # CHANGE: jmp menu_loop
     
     cmp %eax, $7
     jne check_pressure_reset
     # La voce selezionata è "Frecce direzione"
     pushl frecce_direzione
-    pushl $menu_list + 6*30 ; Puntatore alla voce del menu corrispondente
+    pushl $menu_list + 6*30 # Puntatore alla voce del menu corrispondente
     call sub_menu
     movb %al, frecce_direzione
     jmp menu_loop
@@ -170,15 +170,15 @@ sub_menu:
     pushl %ebp
     movl %esp, %ebp
     
-    movl 8(%ebp), %esi ; Puntatore alla stringa del sottomenu
-    movb 12(%ebp), %al ; Valore iniziale (0 o 1)
-    movb %al, (%ebp) ; Variabile locale per il valore
+    movl 8(%ebp), %esi # Puntatore alla stringa del sottomenu
+    movb 12(%ebp), %al # Valore iniziale (0 o 1)
+    movb %al, (%ebp) # Variabile locale per il valore
     
 sub_menu_loop:
     # Stampo il sottomenu corrente con il valore attuale
     pushl %esi
     movzbl (%ebp), %eax
-    test %eax, %eax ; Verifica se il registro contiene un valore diverso da zero. Serve per controllare se un registro è zero o non zero prima di eseguire ulteriori istruzioni condizionali
+    test %eax, %eax # Verifica se il registro contiene un valore diverso da zero. Serve per controllare se un registro è zero o non zero prima di eseguire ulteriori istruzioni condizionali
     jnz print_submenu_on
     pushl %esi
     movl $format_submenu_off, %esi
@@ -196,7 +196,7 @@ sub_menu_input:
     # Leggo l'input dell'utente
     call read_char
     
-    cmpb $27, %al ; Controllo se il carattere letto è la sequenza di escape
+    cmpb $27, %al # Controllo se il carattere letto è la sequenza di escape
     jne sub_menu_handle_input
     
     # Leggo il carattere successivo per determinare il tipo di freccia
@@ -223,10 +223,10 @@ sub_menu_toggle_value:
 print_string:
     pusha
     
-    movl $-1, %edx ; Lunghezza della stringa, -1 per calcolarla automaticamente
-    movl %esi, %ecx ; Puntatore alla stringa
-    movl $1, %ebx ; File descriptor 1 (stdout)
-    movl $4, %eax ; Syscall write
+    movl $-1, %edx # Lunghezza della stringa, -1 per calcolarla automaticamente
+    movl %esi, %ecx # Puntatore alla stringa
+    movl $1, %ebx # File descriptor 1 (stdout)
+    movl $4, %eax # Syscall write
     int $0x80
     
     popa
@@ -236,10 +236,10 @@ print_string:
 read_char:
     pusha
     
-    movl $1, %edx ; Numero di byte da leggere
-    leal carattere, %ecx ; Buffer di destinazione
-    movl $0, %ebx ; File descriptor 0 (stdin)
-    movl $3, %eax ; Syscall read
+    movl $1, %edx # Numero di byte da leggere
+    leal carattere, %ecx # Buffer di destinazione
+    movl $0, %ebx # File descriptor 0 (stdin)
+    movl $3, %eax # Syscall read
     int $0x80
     
     popa
