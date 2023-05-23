@@ -47,7 +47,7 @@ int main(int argc, char **argv)
 {
     int isRoot = 0;
     
-    if(argc >1){
+    if(argc > 1){
 
         if (argv[1][0] == '2' &&
         argv[1][1] == '2' &&

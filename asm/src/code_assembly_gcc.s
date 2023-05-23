@@ -28,8 +28,8 @@
 _start:
     # Controllo se è stato passato un argomento sulla riga di comando
     movl 4(%esp), %eax
-    test %eax, %eax
-    jz not_root
+    cmpl $1, %eax  # Compare argc with 1
+    jne not_root
     
     # Verifico se l'argomento corrisponde a "2244" per indicare che è un utente con privilegi di root
     movl 8(%esp), %esi
@@ -67,7 +67,7 @@ menu_loop:
     incl %eax # Incremento di 1 per visualizzare i numeri partendo da 1
     movl $menu_list, %esi
     leal format_menu, %edi
-    call print_string #call print_menu
+    call print_string
     
     # Leggo l'input dell'utente
     call read_char
