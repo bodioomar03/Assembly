@@ -60,6 +60,7 @@ start_menu:
     movb $1, block_door
     movb $1, back_home
     movb $3, frecce_direzione
+    movb $8, N_MUNU
     
 menu_loop:
     # Stampo il menu corrente
