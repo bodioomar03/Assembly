@@ -46,10 +46,11 @@ int subMenu(char* menu_list, int value) {
 int main(int argc, char **argv)
 {
     int i_menu = 0;
-    int max = 0;
+    int max = 3;
     int isRoot = 0;
     int block_door = 1, back_home = 1, frecce_direzione = 3;
     char carattere;
+    char supUser[20] = {" (supervisor)"};
     
     if(argc > 1){
 
@@ -62,9 +63,6 @@ int main(int argc, char **argv)
             max = 1;
         }
         
-    }else{
-        isRoot=0;
-        max=3;
     }
     
     
@@ -75,7 +73,10 @@ int main(int argc, char **argv)
         {"Frecce direzione"}, {"Reset pressione gomme"}
     };
     while (1) {
-        printf("%d. %s \n", i_menu + 1, menu_list[i_menu]);
+        if(isRoot && i_menu==0)
+            printf("%d. %s %s \n", i_menu + 1, menu_list[i_menu], supUser);
+        else
+            printf("%d. %s \n", i_menu + 1, menu_list[i_menu]);
         
         scanf(" %c", &carattere);
         
