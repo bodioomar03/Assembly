@@ -1,5 +1,5 @@
 #include <stdio.h>
-#define N_MUNU 8
+#define N_MENU 8
 
 // Funzione per determinare il tipo di input
 int subMenu(char* menu_list, int value) {
@@ -68,7 +68,7 @@ int main(int argc, char **argv)
     }
     
     
-    char menu_list[N_MUNU][30] = 
+    char menu_list[N_MENU][30] = 
     {
         {"Setting automobile:"}, {"Data: 15/06/2014"}, {"Ora: 15:32"}, 
         {"Blocco automatico porte:"}, {"Back-home:"}, {"Check olio"}, 
@@ -88,10 +88,10 @@ int main(int argc, char **argv)
                 if (i_menu > 0) {
                     i_menu--;
                 }else{
-                    i_menu = N_MUNU-max;
+                    i_menu = N_MENU-max;
                 }
             } else if (freccia == 'B') {
-                if (i_menu < (N_MUNU-max)) {
+                if (i_menu < (N_MENU-max)) {
                     i_menu++;
                 }
                 else {
