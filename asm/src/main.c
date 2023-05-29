@@ -45,7 +45,11 @@ int subMenu(char* menu_list, int value) {
 
 int main(int argc, char **argv)
 {
+    int i_menu = 0;
+    int max = 0;
     int isRoot = 0;
+    int block_door = 1, back_home = 1, frecce_direzione = 3;
+    char carattere;
     
     if(argc > 1){
 
@@ -55,10 +59,12 @@ int main(int argc, char **argv)
         argv[1][3] == '4') {
             
             isRoot = 1;
+            max = 1;
         }
         
     }else{
         isRoot=0;
+        max=0;
     }
     
     
@@ -68,25 +74,6 @@ int main(int argc, char **argv)
         {"Blocco automatico porte:"}, {"Back-home:"}, {"Check olio"}, 
         {"Frecce direzione"}, {"Reset pressione gomme"}
     };
-    
-    
-    
-    
-    
-    int i_menu = 0;
-    
-    int max = 0;
-    
-    if (isRoot)
-        max = 1;
-    else
-        max = 3;
-        
-    
-    int block_door = 1, back_home = 1, frecce_direzione = 3;     
-    
-    
-    char carattere;
     while (1) {
         printf("%d. %s \n", i_menu + 1, menu_list[i_menu]);
         
