@@ -1,2 +1,2 @@
 # Assembly
-Elaborato assembly bodio pixel e dio cane
+Elaborato assembly bodio pixel
