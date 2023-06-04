@@ -1,122 +1,521 @@
-.data
-N_MENU:     .equ 8
-MENU_LIST:  .asciz "Setting automobile:\n"
-            .asciz "Data: 15/06/2014\n"
-            .asciz "Ora: 15:32\n"
-            .asciz "Blocco automatico porte:\n"
-            .asciz "Back-home:\n"
-            .asciz "Check olio\n"
-            .asciz "Frecce direzione\n"
-            .asciz "Reset pressione gomme\n"
-IS_ROOT:    .long 0
-I_MENU:     .long 0
-MAX:        .long 0
-BLOCK_DOOR: .long 1
-BACK_HOME:  .long 1
-FRECCE_DIR: .long 3
-CARATTERE:  .byte 0
+.section .data
+    msg0:
+        .asciz "1. Setting automobile:\n"
+    msg0Super:
+        .asciz "1. Setting automobile: (SuperVisor)\n"
+    msg1:
+        .asciz "2. Data: 15/06/2014\n"
+    msg2:
+        .asciz "3. Ora: 15:32\n"
+    msg3:
+        .asciz "4. Blocco automatico porte:\n"
+    msg4:
+        .asciz "5. Back-home:\n"
+    msg5:
+        .asciz "6. Check olio\n"
+    msg6:
+        .asciz "7. Frecce direzione\n"
+    msg7:
+        .asciz "8. Reset pressione gomme\n"
 
-.text
+    format_pressure_reset: .string "Pressione gomme resettata\n"
+    n_lampeggi: .string "Numero Lampeggi: "
+    new_line: .string "\n"
+
+    msg3ON:
+        .asciz "Blocco automatico porte: ON\n"
+    msg3OFF:
+        .asciz "Blocco automatico porte: OFF\n"
+
+    msg4ON:
+        .asciz "Back-home: ON\n"
+    msg4OFF:
+        .asciz "Back-home: OFF\n"
+
+
+.section .bss
+    .comm carattere, 1
+
+    .comm i_menu, 4
+    .comm block_door, 4
+    .comm back_home, 4
+    .comm frecce_direzione, 4
+
+    .comm isRoot, 4
+    .comm N_MUNU, 4
+    .comm max, 4
+
+
+
+.section .text
 .globl _start
 
+
+
+.extern print_string
+.extern print_int
+.extern read_char
+.extern read_int
+
+
+
+
 _start:
-    # Imposta IS_ROOT a 0 inizialmente
-    movl $0, IS_ROOT
+    # Controllo se è stato passato un argomento sulla riga di comando
+    movl (%esp), %eax
+    cmpl $2, %eax
+    jl not_root    # Facccio la jump if argc < 2
+    
+    # Verifico se l'argomento corrisponde a "2244" per indicare che è un utente con privilegi di root
+    movl 8(%esp), %esi
+    movb (%esi), %al
+    cmpb $'2', %al
+    jne not_root
+    movb 1(%esi), %al
+    cmpb $'2', %al
+    jne not_root
+    movb 2(%esi), %al
+    cmpb $'4', %al
+    jne not_root
+    movb 3(%esi), %al
+    cmpb $'4', %al
+    jne not_root
+    
+    # Se l'argomento corrisponde a "2244", imposto isRoot a 1
+    movl $1, isRoot
 
-    # Controllo se è stato passato un argomento alla riga di comando
-    cmpl $1, %eax
-    jle else
-    # Se argc > 1, controlla se l'argomento è "2244"
-    movl 8(%ebp), %eax
-    movb $'2', %bl
-    cmpb %bl, (%eax)
-    jne else
-    movb $'2', %bl
-    cmpb %bl, 1(%eax)
-    jne else
-    movb $'4', %bl
-    cmpb %bl, 2(%eax)
-    jne else
-    movb $'4', %bl
-    cmpb %bl, 3(%eax)
-    jne else
-    # Se l'argomento è "2244", imposta IS_ROOT a 1
-    movl $1, IS_ROOT
-    else:
+    jmp start_menu
 
-    # Inizializza i registri per il ciclo principale
-    movl $0, %eax
-    movl %eax, I_MENU
-    movl %eax, MAX
 
-    # Controllo se IS_ROOT è vero per impostare MAX
-    cmpl $0, IS_ROOT
-    jne set_max
 
-    # Imposta MAX a 3 se IS_ROOT è falso
-    movl $3, MAX
-    jmp menu_loop
+not_root:
+    # Altrimenti, isRoot rimane a 0
+    movl $0, isRoot
+    
 
-    set_max:
-    # Imposta MAX a 1 se IS_ROOT è vero
-    movl $1, MAX
+start_menu:
+    # Inizializzo i valori delle variabili
+    movl $0, i_menu
+    movl $1, block_door
+    movl $1, back_home
+    movl $3, frecce_direzione
 
-    menu_loop:
-    # Stampa il menu corrente
-    movl I_MENU, %eax
-    leal MENU_LIST(,%eax,4), %eax
-    push %eax
-    push $menu_format
-    call printf
-    add $8, %esp
+    movl $8, N_MUNU
 
-    # Legge il carattere
-    push $1
-    leal CARATTERE, %eax
-    push %eax
-    push $char_format
-    call scanf
-    add $8, %esp
 
-    # Controlla il carattere letto
-    movb CARATTERE, %bl
-    cmpb $'\033', %bl
-    jne menu_loop
-
-    # Legge il carattere successivo per determinare il tipo di freccia
-    call getchar
-    movb %al, %bl
-    cmpb $'A', %bl
-    jne check_down
-
-    # Gestisce la freccia su
-    movl I_MENU, %eax
+    # Serve per cambiare la dimensine di N_MENU in base a isRoot
+    movl isRoot, %eax
     cmpl $0, %eax
-    jle set_max_i_menu
-    subl $1, %eax
-    jmp set_i_menu
+    je set_max_one
+    movl $1, max
 
-    check_down:
-    cmpb $'B', %bl
+    jmp set_new_nmenu
+    
+
+set_max_one:
+    movl $3, max
+    jmp set_new_nmenu
+    
+
+set_new_nmenu:
+    movl N_MUNU, %eax  # Carica il valore di N_MUNU nel registro %eax
+    subl max, %eax      # Sottrai il valore di max da %eax
+    movl %eax, N_MUNU  # Salva il risultato in N_MUNU
+
+    jmp print_menu
+
+
+
+# Stampo il menu corrente
+print_menu:
+    movl i_menu, %eax
+
+    # Seleziona l'elemento in base all'indice
+    cmpl $0, %eax
+    je set_msg0
+    cmpl $1, %eax
+    je set_msg1
+    cmpl $2, %eax
+    je set_msg2
+    cmpl $3, %eax
+    je set_msg3
+    cmpl $4, %eax
+    je set_msg4
+    cmpl $5, %eax
+    je set_msg5
+    cmpl $6, %eax
+    je set_msg6
+    cmpl $7, %eax
+    je set_msg7
+
+    jmp print_menu
+
+
+menu_loop:
+    # Leggo l'input dell'utente
+    call read_char
+    
+    
+    cmpb $27, carattere # Controllo se il carattere letto è la sequenza di escape
     jne menu_loop
 
-    # Gestisce la freccia giù
-    movl I_MENU, %eax
+
+    # Leggi il secondo carattere per rimuovere '['
+    call read_char
+
+    
+    # Leggo il carattere successivo per determinare il tipo di freccia
+    call read_char
+    cmpb $'A', carattere
+    je handle_up_arrow
+    cmpb $'B', carattere
+    je handle_down_arrow
+    cmpb $'C', carattere
+    je handle_right_arrow
+
+
+    # Loop while
+    jmp print_menu
+
+
+
+handle_up_arrow:
+    # Freccia su, decremento i_menu
+    movl i_menu, %eax
+    cmpl $0, %eax
+    jle set_i_menu_max
+    dec %eax
+    movl %eax, i_menu
+
+    jmp print_menu
+
+    
+set_i_menu_max:
+    # Se i_menu è <= 0, lo setto al valore massimo consentito
+    movl N_MUNU, %eax
+    movl %eax, i_menu
+
+    jmp print_menu
+    
+
+handle_down_arrow:
+    # Freccia giù, incremento i_menu
+    movl i_menu, %eax
+    inc %eax
+
+
+    cmpl N_MUNU, %eax
+    jg set_i_menu_min
+    movl %eax, i_menu
+    
+    jmp print_menu
+    
+set_i_menu_min:
+    # Se i_menu è > N_MENU, lo setto a 0
+    xorl %eax, %eax
+    movl %eax, i_menu
+
+    jmp print_menu
+
+
+
+
+handle_right_arrow:
+    # Freccia destra, controllo quale voce del menu è selezionata
+    movl i_menu, %eax
+
+    # NORMAL USER SUB-MENU #
+    cmpl $3, %eax
+    je print_sub_menu
+    
+    cmpl $4, %eax
+    je print_sub_menu
+
+
+
+    # SUPER USER SUB-MENU #
+    cmpl $6, %eax
+    je set_freccie_direzione
+
     cmpl $7, %eax
-    jl inc_i_menu
-    set_max_i_menu:
-    movl N_MENU, %eax
-    subl MAX, %eax
-    decl %eax
-    jmp set_i_menu
+    je set_pressione_gomme
 
-    inc_i_menu:
-    incl %eax
 
-    set_i_menu:
-    movl %eax, I_MENU
+    jmp print_menu
+
+
+
+set_pressione_gomme:
+    # Stampo al stringa di reset pressione gomme
+    movl $format_pressure_reset, %esi
+    call print_string
+    
+    jmp print_menu
+
+
+
+
+
+set_freccie_direzione:
+    # Elimino i caratteri rimanenti nel buffer
+    call read_char
+
+
+    # Stampo la stringa lampeggi
+    movl $n_lampeggi, %esi
+    call print_string
+
+
+    # Chiama la funzione print_int
+    pushl $frecce_direzione  # Passa il numero intero come parametro
+    call print_int
+
+    # Stampo carattere "a capo"
+    movl $new_line, %esi
+    call print_string
+
+
+
+    # Leggo il nuovo valore freccia_direzione
+    call read_int
+
+    movl frecce_direzione, %eax  # Carica il valore di frecce_direzione in %eax
+
+    # Confronto il primo byte
+    cmpb $2, %al                # Confronta il valore con 2
+    jl less_than_2               # Salta a less_than_2 se è minore di 2
+    cmpb $5, %al                # Confronta il valore con 5
+    jg greater_than_5
+
+    jmp print_menu
+
+
+
+less_than_2:
+    movl $2, frecce_direzione    # Imposta il valore di frecce_direzione a 2
+    jmp print_menu
+
+greater_than_5:
+    movl $5, frecce_direzione    # Imposta il valore di frecce_direzione a 5
+    jmp print_menu
+
+
+
+
+
+
+
+
+
+
+
+
+# Controllo quale voce del menu è selezionata
+print_sub_menu:
+    movl i_menu, %eax
+
+    # NORMAL USER SUB-MENU #
+    cmpl $3, %eax
+    je print_block_door
+    
+    cmpl $4, %eax
+    je print_back_home
+
+
+
+print_block_door:
+    movl block_door, %ebx
+
+    # Seleziona ON/OFF in base al valore
+    cmpl $0, %ebx
+    je set_msg3OFF
+    cmpl $1, %ebx
+    je set_msg3ON
+
+    jmp print_sub_menu
+
+
+print_back_home:
+    movl back_home, %ebx
+
+    # Seleziona ON/OFF in base al valore
+    cmpl $0, %ebx
+    je set_msg4OFF
+    cmpl $1, %ebx
+    je set_msg4ON
+
+    jmp print_sub_menu
+
+
+
+sub_menu_loop:
+    # Cancello \n dal buffer
+    call read_char
+
+
+    # Leggo l'input dell'utente
+    call read_char
+    
+
+    cmpb $10, carattere # Controllo se il carattere letto è \n e torno al menu
+    je print_menu
+    
+
+    cmpb $27, carattere # Controllo se il carattere letto è la sequenza di escape
+    jne sub_menu_loop
+
+
+    # Leggi il secondo carattere per rimuovere '['
+    call read_char
+
+    
+    # Leggo il carattere successivo per determinare il tipo di freccia
+    call read_char
+    cmpb $'A', carattere
+    je select_what_invert
+    cmpb $'B', carattere
+    je select_what_invert
+
+    # Loop while
+    jmp print_sub_menu
+
+
+
+
+# In base al indice i_menu inverto il valore da 0 a 1 || 1 a 0
+select_what_invert:
+    movl i_menu, %eax
+
+    # NORMAL USER SUB-MENU #
+    cmpl $3, %eax
+    je invert_value_block_door
+    
+    cmpl $4, %eax
+    je invert_value_back_home
+
+
+
+invert_value_block_door:
+    movl block_door, %ebx
+    xorl $1, %ebx   # Esegue l'operazione XOR con 1 per invertire il valore
+    movl %ebx, block_door
+     
+    jmp print_sub_menu
+
+
+invert_value_back_home:
+    movl back_home, %ebx
+    xorl $1, %ebx   # Esegue l'operazione XOR con 1 per invertire il valore
+    movl %ebx, back_home
+     
+    jmp print_sub_menu
+
+
+
+
+
+
+
+
+
+
+# Sezione Stampa
+
+set_msg0:
+    movl isRoot, %eax
+    cmpl $1, %eax
+    je set_msg0Super
+
+    movl $msg0, %esi
+    call print_string
+    
     jmp menu_loop
 
-.section .data
-menu_format: .asciz "%d. %s\n"
-char_format: .asciz " %c"
+
+set_msg0Super:
+    movl $msg0Super, %esi
+    call print_string
+    
+    jmp menu_loop
+
+
+set_msg1:
+    movl $msg1, %esi
+    call print_string
+    
+    jmp menu_loop
+
+
+set_msg2:
+    movl $msg2, %esi
+    call print_string
+    
+    jmp menu_loop
+
+
+set_msg3:
+    movl $msg3, %esi
+    call print_string
+    
+    jmp menu_loop
+
+
+set_msg4:
+    movl $msg4, %esi
+    call print_string
+    
+    jmp menu_loop
+
+
+set_msg5:
+    movl $msg5, %esi
+    call print_string
+    
+    jmp menu_loop
+
+
+set_msg6:
+    movl $msg6, %esi
+    call print_string
+    
+    jmp menu_loop
+
+
+set_msg7:
+    movl $msg7, %esi
+    call print_string
+    
+    jmp menu_loop
+
+
+
+
+
+
+set_msg3ON:
+    movl $msg3ON, %esi
+    call print_string
+    
+    jmp sub_menu_loop
+
+
+set_msg3OFF:
+    movl $msg3OFF, %esi
+    call print_string
+    
+    jmp sub_menu_loop
+
+
+
+set_msg4ON:
+    movl $msg4ON, %esi
+    call print_string
+    
+    jmp sub_menu_loop
+
+
+set_msg4OFF:
+    movl $msg4OFF, %esi
+    call print_string
+    
+    jmp sub_menu_loop
